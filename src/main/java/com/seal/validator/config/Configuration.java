@@ -20,12 +20,4 @@ public interface Configuration
     String getMode();
 
     String getPackage();
-
-    void addAnnotation(Class<?> annotation);
-
-    boolean AnnotationContains(Class<?> annotation);
-
-    List<Class<?>> getAnnotationList();
-
-    List<Class<?>> matches(Annotation @NotNull [] annotations);
 }
