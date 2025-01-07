@@ -4,14 +4,16 @@ import com.seal.validator.Validator;
 import com.seal.validator.config.Configuration;
 import com.seal.validator.exception.ConfigurationException;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class App
 {
     public static void main(String[] args) {
-        Request request = new Request();
+        Request request = new Request("Seal", "example@example.com");
 
 
         try {
-            request.validate(Request.class);
+            request.validate(request);
             // TODO: подумать как инитить конфиг. Должна быть возможность брать из .properties и собирать в рантайме
 //            Validator validator = new Validator();
 //            Configuration config = validator.getConfig();
@@ -21,8 +23,8 @@ public class App
 //                    .build();
 
 //            validator.init();
-        } catch (ConfigurationException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

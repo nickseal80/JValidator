@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JAnnotation implements Annotation
 {
@@ -50,5 +53,19 @@ public class JAnnotation implements Annotation
         }
 
         return matches;
+    }
+
+    public static Map<String, String> getAnnotationArgs(java.lang.annotation.Annotation annotation) {
+        String annotationString = annotation.toString();
+        Pattern pattern = Pattern.compile("@(\\w+\\.)+\\w+\\((.*)\\)");
+        Matcher matcher = pattern.matcher(annotationString);
+
+        if (matcher.matches()) {
+            String argsString = matcher.group(2);
+
+            return StringUtils.toMap(argsString);
+        }
+
+        throw new NullPointerException("azazqa");
     }
 }

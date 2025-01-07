@@ -8,10 +8,11 @@ import com.seal.validator.annotation.validation.Required;
 public class Request implements Validable
 {
     @Required
-    @MinLength
+    @MinLength(min = 2)
     private String name;
 
     @Required
+    @MinLength(min = 5)
     private String email;
 
     public Request() {}

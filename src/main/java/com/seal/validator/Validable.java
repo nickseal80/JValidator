@@ -5,7 +5,7 @@ import com.seal.validator.exception.ConfigurationException;
 
 public interface Validable
 {
-    default void validate(Class<? extends Validable> clazz) throws ConfigurationException {
+    default void validate(Validable validableClass) throws ConfigurationException, IllegalAccessException {
         Validator validator = new Validator();
         Configuration config = validator.getConfig();
         config
@@ -13,6 +13,6 @@ public interface Validable
                 .setMode(Configuration.MODE_DEBUG)
                 .build();
 
-        validator.init(clazz);
+        validator.init(validableClass);
     }
 }
