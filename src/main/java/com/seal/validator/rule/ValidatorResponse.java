@@ -1,13 +1,15 @@
 package com.seal.validator.rule;
 
 import com.seal.validator.rule.error.ErrorList;
+import com.seal.validator.rule.error.FieldError;
 
-import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ValidatorResponse
 {
     private int statusCode;
-    private ErrorList errorList;
+    private List<FieldError> errorList = new ArrayList<>();
 
     public ValidatorResponse() {}
 
@@ -24,11 +26,11 @@ public class ValidatorResponse
         this.statusCode = statusCode;
     }
 
-    public ErrorList getErrorList() {
+    public List<FieldError> getErrorList() {
         return errorList;
     }
 
-    public void setErrorList(ErrorList errorList) {
+    public void setErrorList(List<FieldError> errorList) {
         this.errorList = errorList;
     }
 }

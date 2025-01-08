@@ -7,11 +7,11 @@ import com.seal.validator.annotation.validation.Required;
 public class Request implements Validable
 {
     @Required
-    @MinLength(min = 2, fieldName = "Nickname")
+    @MinLength(min = 2)
     private String name;
 
     @Required
-    @MinLength(message = "Field '$fieldName$' must have at least $min$ character", min = 5, fieldName = "Email")
+    @MinLength(min = 5)
     private String email;
 
     public Request() {}

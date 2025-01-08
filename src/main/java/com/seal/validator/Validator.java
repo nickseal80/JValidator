@@ -3,11 +3,13 @@ package com.seal.validator;
 import com.seal.validator.config.ConfigBuilder;
 import com.seal.validator.config.Configuration;
 import com.seal.validator.exception.ConfigurationException;
+import com.seal.validator.exception.NoImplementationFoundException;
 import com.seal.validator.exception.ValidationRuleNotFoundException;
 import com.seal.validator.rule.RuleDataObject;
 import com.seal.validator.rule.RuleFunc;
 import com.seal.validator.rule.Rules;
 import com.seal.validator.rule.ValidatorResponse;
+import com.seal.validator.rule.error.Error;
 import com.seal.validator.rule.error.ErrorList;
 import com.seal.validator.rule.error.FieldError;
 import com.seal.validator.util.JAnnotation;
@@ -44,24 +46,21 @@ public class Validator
         }
     }
 
-    public void init(Validable validableClass) throws IllegalAccessException {
-//        Reflections reflections = new Reflections(config.getPackage());
-//        Set<Class<? extends Validable>> implementationClasses = reflections.getSubTypesOf(Validable.class);
-
-//        if (config.getMode().equals(Configuration.MODE_DEBUG)) {
-//            logger.info("Found {} implementations", implementationClasses.size());
-//            if (!implementationClasses.isEmpty()) {
-//                logger.info(implementationClasses.toString());
-//            }
-//        }
-
+    public ValidatorResponse validateRequest(Validable validableClass) throws IllegalAccessException {
         if (validableClass != null) {
             validate(validableClass);
-        } else {
-            if (config.getMode().equals(Configuration.MODE_DEBUG)) {
-                logger.warn("No implementations found");
+            ValidatorResponse response = new ValidatorResponse();
+            if (errorList.isEmpty()) {
+                response.setStatusCode(200);
+            } else {
+                response.setStatusCode(422);
+                response.setErrorList(errorList);
             }
+
+            return response;
         }
+
+        throw new NoImplementationFoundException("No implementations found");
     }
 
     public Configuration getConfig() {
@@ -105,7 +104,7 @@ public class Validator
      * @throws IllegalAccessException
      */
     private void validateField(@NotNull Field field, Validable validable) throws IllegalAccessException {
-        FieldError fieldError = new FieldError();
+        FieldError fieldError = new FieldError(field.getClass().getSimpleName());
 
         field.setAccessible(true);
 
@@ -139,14 +138,20 @@ public class Validator
                 RuleFunc func = ruleFuncMap.get(ruleDataObject.getRuleType());
                 if (func != null) {
                     if (!func.isValid(ruleDataObject)) {
+                        Error error = new Error();
+                        error.setName(ruleDataObject.getRuleType());
+                        error.setMessage(ruleDataObject.getMessage());
 
+                        fieldError.addError(error);
                     }
                 } else {
                     throw new ValidationRuleNotFoundException("Validation rule not Found");
                 }
-                System.out.printf(String.valueOf(func.isValid(ruleDataObject)));
             }
 
+            if (!fieldError.getErrors().isEmpty()) {
+                errorList.add(fieldError);
+            }
         } catch (InvocationTargetException | ValidationRuleNotFoundException e) {
             throw new RuntimeException(e);
         }

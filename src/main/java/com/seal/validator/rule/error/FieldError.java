@@ -1,11 +1,16 @@
 package com.seal.validator.rule.error;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FieldError
 {
     private String field;
-    private List<Error> errors;
+    private List<Error> errors = new ArrayList<>();
+
+    public FieldError(String field) {
+        this.field = field;
+    }
 
     public String getField() {
         return field;
@@ -19,7 +24,7 @@ public class FieldError
         return errors;
     }
 
-    public void setErrors(List<Error> errors) {
-        this.errors = errors;
+    public void addError(Error error) {
+        errors.add(error);
     }
 }

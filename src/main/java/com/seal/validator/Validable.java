@@ -2,10 +2,11 @@ package com.seal.validator;
 
 import com.seal.validator.config.Configuration;
 import com.seal.validator.exception.ConfigurationException;
+import com.seal.validator.rule.ValidatorResponse;
 
 public interface Validable
 {
-    default void validate(Validable validableClass) throws ConfigurationException, IllegalAccessException {
+    default ValidatorResponse validate(Validable validableClass) throws ConfigurationException, IllegalAccessException {
         Validator validator = new Validator();
         Configuration config = validator.getConfig();
         config
@@ -13,6 +14,6 @@ public interface Validable
                 .setMode(Configuration.MODE_DEBUG)
                 .build();
 
-        validator.init(validableClass);
+        return validator.validateRequest(validableClass);
     }
 }
