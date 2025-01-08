@@ -1,11 +1,13 @@
 package com.seal.validator.rule;
 
-public class RuleDataObject
+import java.util.Map;
+
+public class RuleDataObject implements RuleData
 {
     private String ruleType;
     private String fieldName;
     private Object fieldValue;
-    private Object[] args;
+    private Map<String, Object> args;
     private String message;
 
     public String getRuleType() {
@@ -32,11 +34,11 @@ public class RuleDataObject
         this.fieldValue = fieldValue;
     }
 
-    public Object[] getArgs() {
+    public Map<String, Object> getArgs() {
         return args;
     }
 
-    public void setArgs(Object[] args) {
+    public void setArgs(Map<String, Object> args) {
         this.args = args;
     }
 
@@ -46,5 +48,10 @@ public class RuleDataObject
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "RuleDataObject [ruleType=" + ruleType + ", fieldName=" + fieldName + ", fieldValue=" + fieldValue + ", args=" + args.toString() + ", message=" + message + "]\n";
     }
 }

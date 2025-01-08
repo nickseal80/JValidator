@@ -5,5 +5,5 @@ import java.lang.reflect.Field;
 @FunctionalInterface
 public interface RuleFunc
 {
-    boolean isValid(Field field);
+    boolean isValid(RuleDataObject ruleDataObject);
 }

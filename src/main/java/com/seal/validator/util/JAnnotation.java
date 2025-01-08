@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JAnnotation implements Annotation
+public class JAnnotation
 {
     private final List<Class<?>> annotationsList;
 
@@ -19,7 +19,6 @@ public class JAnnotation implements Annotation
         annotationsList = defaultAnnotationList.getAnnotations();
     }
 
-    @Override
     public void addAnnotation(@NotNull Class<?> annotation) {
         if (annotation.isAnnotation()) {
             annotationsList.add(annotation);
@@ -30,17 +29,14 @@ public class JAnnotation implements Annotation
         }
     }
 
-    @Override
     public boolean AnnotationContains(Class<?> annotation) {
         return annotationsList.contains(annotation);
     }
 
-    @Override
     public List<Class<?>> getAnnotationList() {
         return List.of();
     }
 
-    @Override
     public List<Class<?>> matches(java.lang.annotation.Annotation @NotNull [] annotations) {
         List<Class<?>> matches = new ArrayList<>();
 

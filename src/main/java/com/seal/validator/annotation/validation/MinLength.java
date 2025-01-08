@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
 public @interface MinLength
 {
     int min() default 1;
+    String fieldName();
     String message() default "Field must have at least $min$ character";
 }

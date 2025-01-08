@@ -1,19 +1,25 @@
 package com.seal.validator.rule;
 
-import org.jetbrains.annotations.NotNull;
+import com.seal.validator.annotation.validation.MinLength;
+import com.seal.validator.annotation.validation.Required;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Rules
 {
-    private Map<String, RuleFunc> rules = new HashMap<>();
+    private final Map<String, RuleFunc> rules = new HashMap<>();
 
     public Rules() {
-        rules.put("required", (field) -> {
-            // ...
-            return false;
-        });
+        rules.put(Required.class.getName(), (dataObject) ->
+                (dataObject.getFieldValue() != null) && (!dataObject.getFieldValue().equals("")));
+
+        rules.put(MinLength.class.getName(), (ruleDataObject ->
+                ((String) ruleDataObject.getFieldValue()).length() >= (int) ruleDataObject.getArgs().get("min")));
+
+    }
+
+    public Map<String, RuleFunc> getRules() {
+        return rules;
     }
 }

@@ -1,27 +1,38 @@
 package com.seal.validator;
 
-import com.seal.validator.annotation.validation.MinLength;
-import com.seal.validator.annotation.validation.Required;
 import com.seal.validator.config.ConfigBuilder;
 import com.seal.validator.config.Configuration;
 import com.seal.validator.exception.ConfigurationException;
-import com.seal.validator.util.Annotation;
+import com.seal.validator.exception.ValidationRuleNotFoundException;
+import com.seal.validator.rule.RuleDataObject;
+import com.seal.validator.rule.RuleFunc;
+import com.seal.validator.rule.Rules;
+import com.seal.validator.rule.ValidatorResponse;
+import com.seal.validator.rule.error.ErrorList;
+import com.seal.validator.rule.error.FieldError;
 import com.seal.validator.util.JAnnotation;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Validator
 {
     private static final Logger logger = LoggerFactory.getLogger(Validator.class);
 
     private final Configuration config = new ConfigBuilder();
+
+    private ValidatorResponse response;
+
+    private List<FieldError> errorList = new ArrayList<>();
 
     public Validator() {}
 
@@ -82,27 +93,79 @@ public class Validator
         Map<Field, List<Class<?>>> fieldMap = classMap.get(validableClass.getClass());
         if (fieldMap != null) {
             for (Field field : fieldMap.keySet()) {
-                validateField(field);
+                validateField(field, validableClass);
             }
         }
     }
 
-    private void validateField(@NotNull Field field) throws IllegalAccessException {
+    /**
+     *
+     * @param field
+     * @param validable
+     * @throws IllegalAccessException
+     */
+    private void validateField(@NotNull Field field, Validable validable) throws IllegalAccessException {
+        FieldError fieldError = new FieldError();
+
         field.setAccessible(true);
 
         try {
-            for (java.lang.annotation.Annotation annotation : field.getAnnotations()) {
+            for (@NotNull Annotation annotation : field.getAnnotations()) {
                 Map<String, Object> args = new HashMap<>();
+                String messageTemp = "";
+                String message = "";
                 for (Method method : annotation.annotationType().getDeclaredMethods()) {
-                    args.put(method.getName() ,method.invoke(annotation, (Object[]) null));
+                    Object value = method.invoke(annotation);
+                    args.put(method.getName() ,value);
+
+                    if (method.getName().equals("message")) {
+                        messageTemp = (String) value;
+                    }
+                }
+                if (!messageTemp.isEmpty()) {
+                    message = buildMessage(args);
                 }
 
-                System.out.printf(args.toString());
+                RuleDataObject ruleDataObject = new RuleDataObject();
+                ruleDataObject.setFieldName(field.getName());
+                ruleDataObject.setFieldValue(field.get(validable));
+                ruleDataObject.setRuleType(annotation.annotationType().getName());
+                ruleDataObject.setArgs(args);
+                ruleDataObject.setMessage(message);
+
+                Rules rules = new Rules();
+                Map<String, RuleFunc> ruleFuncMap = rules.getRules();
+
+                RuleFunc func = ruleFuncMap.get(ruleDataObject.getRuleType());
+                if (func != null) {
+                    if (!func.isValid(ruleDataObject)) {
+
+                    }
+                } else {
+                    throw new ValidationRuleNotFoundException("Validation rule not Found");
+                }
+                System.out.printf(String.valueOf(func.isValid(ruleDataObject)));
             }
 
-        } catch (InvocationTargetException e) {
+        } catch (InvocationTargetException | ValidationRuleNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String buildMessage(Map<String, Object> args) {
+        String message = (String) args.get("message");
+        Pattern pattern = Pattern.compile("\\$.+?\\$");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            String argName = matcher.group().substring(1, matcher.group().length() - 1);
+            Object argValue = args.get(argName);
+
+            if (argValue != null) {
+                message = message.replace(matcher.group(), argValue.toString());
+            }
+        }
+
+        return message;
     }
 
     /**
@@ -111,7 +174,7 @@ public class Validator
      */
     public Map<Field, List<Class<?>>> getAnnotatedFields(@NotNull Class<? extends Validable> clazz) {
         Map<Field, List<Class<?>>> fields = new HashMap<>();
-        Annotation annotation = new JAnnotation();
+        JAnnotation annotation = new JAnnotation();
 
         for (Field field : clazz.getDeclaredFields()) {
             field.setAccessible(true);
