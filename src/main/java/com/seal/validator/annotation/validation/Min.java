@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Min
 {
+    int min();
+    String message() default "Value must be at least $min$";
 }

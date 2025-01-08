@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Email
 {
+    String message() default "Email is not valid";
 }

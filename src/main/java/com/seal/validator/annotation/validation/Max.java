@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Max
 {
+    int max();
+    String message() default "Value must be no more than $max$";
 }

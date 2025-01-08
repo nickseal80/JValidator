@@ -1,6 +1,5 @@
 package com.seal.validator.rule;
 
-import com.seal.validator.rule.error.ErrorList;
 import com.seal.validator.rule.error.FieldError;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public class ValidatorResponse
 
     public ValidatorResponse() {}
 
-    public ValidatorResponse(int statusCode, ErrorList errorList) {
+    public ValidatorResponse(int statusCode, List<FieldError> errorList) {
         this.statusCode = statusCode;
         this.errorList = errorList;
     }

@@ -1,11 +1,6 @@
 package com.seal.validator.example;
 
-import com.seal.validator.Validator;
-import com.seal.validator.config.Configuration;
-import com.seal.validator.exception.ConfigurationException;
 import com.seal.validator.rule.ValidatorResponse;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class App
 {

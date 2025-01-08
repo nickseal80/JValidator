@@ -6,7 +6,7 @@ import java.util.List;
 public class FieldError
 {
     private String field;
-    private List<Error> errors = new ArrayList<>();
+    private final List<Error> errors = new ArrayList<>();
 
     public FieldError(String field) {
         this.field = field;

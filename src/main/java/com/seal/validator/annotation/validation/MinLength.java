@@ -1,7 +1,5 @@
 package com.seal.validator.annotation.validation;
 
-import com.seal.validator.annotation.AnnotationType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

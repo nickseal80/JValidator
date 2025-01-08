@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Rules
 {
-    private Map<String, Runnable> rules = new HashMap<>();
+    private final Map<String, Runnable> rules = new HashMap<>();
 
     public Rules() {
         init();

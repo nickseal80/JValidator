@@ -34,7 +34,7 @@ public class Validator
 
     private ValidatorResponse response;
 
-    private List<FieldError> errorList = new ArrayList<>();
+    private final List<FieldError> errorList = new ArrayList<>();
 
     public Validator() {}
 
@@ -97,12 +97,6 @@ public class Validator
         }
     }
 
-    /**
-     *
-     * @param field
-     * @param validable
-     * @throws IllegalAccessException
-     */
     private void validateField(@NotNull Field field, Validable validable) throws IllegalAccessException {
         FieldError fieldError = new FieldError(field.getClass().getSimpleName());
 
