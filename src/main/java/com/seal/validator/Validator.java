@@ -10,9 +10,9 @@ import com.seal.validator.rule.RuleFunc;
 import com.seal.validator.rule.Rules;
 import com.seal.validator.rule.ValidatorResponse;
 import com.seal.validator.rule.error.Error;
-import com.seal.validator.rule.error.ErrorList;
 import com.seal.validator.rule.error.FieldError;
 import com.seal.validator.util.JAnnotation;
+import com.seal.validator.util.Message;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -23,8 +23,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Validator
 {
@@ -96,7 +94,7 @@ public class Validator
             }
         }
     }
-
+    
     private void validateField(@NotNull Field field, Validable validable) throws IllegalAccessException {
         FieldError fieldError = new FieldError(field.getClass().getSimpleName());
 
@@ -116,7 +114,7 @@ public class Validator
                     }
                 }
                 if (!messageTemp.isEmpty()) {
-                    message = buildMessage(args);
+                    message = Message.build(args);
                 }
 
                 RuleDataObject ruleDataObject = new RuleDataObject();
@@ -151,26 +149,6 @@ public class Validator
         }
     }
 
-    private String buildMessage(Map<String, Object> args) {
-        String message = (String) args.get("message");
-        Pattern pattern = Pattern.compile("\\$.+?\\$");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            String argName = matcher.group().substring(1, matcher.group().length() - 1);
-            Object argValue = args.get(argName);
-
-            if (argValue != null) {
-                message = message.replace(matcher.group(), argValue.toString());
-            }
-        }
-
-        return message;
-    }
-
-    /**
-     * @param clazz класс, реализующий интерфейс Validable
-     * @return валидируемые поля с их аннотациями
-     */
     public Map<Field, List<Class<?>>> getAnnotatedFields(@NotNull Class<? extends Validable> clazz) {
         Map<Field, List<Class<?>>> fields = new HashMap<>();
         JAnnotation annotation = new JAnnotation();
