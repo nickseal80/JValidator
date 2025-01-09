@@ -24,6 +24,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * The {@code Validator} class is responsible for validating fields within classes that are annotated with validation annotations.
+ * It supports the validation of various validation rules applied to the fields and generates a {@link ValidatorResponse} based on the validation results.
+ * This class uses a configuration object to manage the validation modes and configurations.
+ */
 public class Validator
 {
     private static final Logger logger = LoggerFactory.getLogger(Validator.class);
@@ -34,8 +39,17 @@ public class Validator
 
     private final List<FieldError> errorList = new ArrayList<>();
 
+    /**
+     * Constructs a new {@code Validator} with default configuration.
+     */
     public Validator() {}
 
+    /**
+     * Constructs a new {@code Validator} and initializes it with the configuration for a specific package.
+     *
+     * @param packageName the package name used to configure the validator
+     * @throws RuntimeException if there is an error in the configuration process
+     */
     public Validator(String packageName) {
         try {
             config.forPackage(packageName).build();
@@ -44,6 +58,15 @@ public class Validator
         }
     }
 
+    /**
+     * Validates a given {@link Validable} object by checking its annotated fields.
+     * Generates a {@link ValidatorResponse} that contains validation results.
+     *
+     * @param validableClass the object to be validated
+     * @return a {@link ValidatorResponse} containing the status code and validation errors, if any
+     * @throws IllegalAccessException if any field in the validable class is inaccessible
+     * @throws NoImplementationFoundException if no validable implementation is found
+     */
     public ValidatorResponse validateRequest(Validable validableClass) throws IllegalAccessException {
         if (validableClass != null) {
             validate(validableClass);
@@ -61,10 +84,22 @@ public class Validator
         throw new NoImplementationFoundException("No implementations found");
     }
 
+    /**
+     * Gets the configuration used by the validator.
+     *
+     * @return the {@link Configuration} object
+     */
     public Configuration getConfig() {
         return config;
     }
 
+    /**
+     * Validates the given {@link Validable} object by checking its fields and the associated annotations.
+     * Logs validation details in debug mode.
+     *
+     * @param validableClass the object to be validated
+     * @throws IllegalAccessException if any field in the validable class is inaccessible
+     */
     public void validate(@NotNull Validable validableClass) throws IllegalAccessException {
         /*
          * @example
@@ -94,7 +129,17 @@ public class Validator
             }
         }
     }
-    
+
+    /**
+     * Validates a specific field within the given {@link Validable} object based on the field's annotations.
+     * If validation fails, an error is added to the {@code errorList}.
+     *
+     * @param field the field to be validated
+     * @param validable the object that contains the field to be validated
+     * @throws IllegalAccessException if the field is inaccessible
+     * @throws InvocationTargetException if an error occurs during annotation method invocation
+     * @throws ValidationRuleNotFoundException if a validation rule is not found for the annotation
+     */
     private void validateField(@NotNull Field field, Validable validable) throws IllegalAccessException {
         FieldError fieldError = new FieldError(field.getClass().getSimpleName());
 
@@ -149,6 +194,13 @@ public class Validator
         }
     }
 
+    /**
+     * Retrieves the annotated fields of a given class that implement the {@link Validable} interface.
+     * This method inspects the annotations of the class fields and returns them in a map.
+     *
+     * @param clazz the class to inspect
+     * @return a map where the key is a field and the value is a list of annotations on that field
+     */
     public Map<Field, List<Class<?>>> getAnnotatedFields(@NotNull Class<? extends Validable> clazz) {
         Map<Field, List<Class<?>>> fields = new HashMap<>();
         JAnnotation annotation = new JAnnotation();
