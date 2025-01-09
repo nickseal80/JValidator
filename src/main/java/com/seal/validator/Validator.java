@@ -141,7 +141,7 @@ public class Validator
      * @throws ValidationRuleNotFoundException if a validation rule is not found for the annotation
      */
     private void validateField(@NotNull Field field, Validable validable) throws IllegalAccessException {
-        FieldError fieldError = new FieldError(field.getClass().getSimpleName());
+        FieldError fieldError = new FieldError(field.getName());
 
         field.setAccessible(true);
 
